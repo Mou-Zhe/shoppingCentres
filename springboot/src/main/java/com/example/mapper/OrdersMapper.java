@@ -15,7 +15,7 @@ public interface OrdersMapper {
 
     void deleteById(Integer id);
 
-    @Select("select * from `order` where id = #{id}")
+    @Select("select * from `orders` where id = #{id}")
     Orders selectById(Integer id);
     
 

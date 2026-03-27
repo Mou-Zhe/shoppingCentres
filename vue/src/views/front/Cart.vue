@@ -88,6 +88,8 @@ const addOrder=()=>{
   request.post("/orders/add?addressId="+data.addressId,data.rows).then(res=>{
     if(res.code==='200'){
       ElMessage.success('下单成功！')
+      //跳转到订单页面
+      router.push('/front/front_orders')
     }else {
       ElMessage.error(res.msg)
     }

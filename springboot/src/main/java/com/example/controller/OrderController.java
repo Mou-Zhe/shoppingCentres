@@ -40,6 +40,16 @@ public class OrderController {
         return Result.success("修改成功");
     }
 
+
+    /**
+     * 支付
+     */
+    @PutMapping("/pay/{orderId}")
+    public Result pay(@PathVariable Integer orderId){
+        orderService.pay(orderId);
+        return Result.success("支付成功");
+    }
+
     /**
      * 删除单条
      */

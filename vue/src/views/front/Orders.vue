@@ -13,32 +13,49 @@
           <el-table-column type="expand">
             <template #default="props">
 
-              <div style="padding: 20px">
-                <el-descriptions title="订单详情" v-for="item in props.row.orderDetailList" :key="item.id">
-                  <el-descriptions-item label="商品图片">
-                    <template>
-                    <el-image style="width: 50px; height: 50px; display: block; border-radius: 5px" :src="item.goodsImg"
-                              :preview-src-list="[item.goodsImg]" preview-teleported></el-image>
+              <div style="padding: 10px">
+                <h3>订单详情</h3>
+                <el-table border :data="props.row.orderDetailList" stripe>
+                  <el-table-column label="商品图片" prop="goodsImg">
+                    <template #default="scope">
+                      <el-image @click="router.push('/front/front_goodsDetail?id='+props.row.goodsId)" style="width: 60px;height: 60px;border-radius: 5px" :src="scope.row.goodsImg"
+                                :preview-src-list="[scope.row.goodsImg]" preview-teleported></el-image>
                     </template>
-                  </el-descriptions-item>
-                  <el-descriptions-item label="商品名称">{{item.goodsName}}</el-descriptions-item>
-                </el-descriptions>
+                  </el-table-column>
+                  <el-table-column label="商品名称" prop="goodsName"></el-table-column>
+                  <el-table-column label="商品单价" prop="goodsPrice">
+                    <template #default="scope">
+                      <b style="font-size: 20px;color: red">￥{{scope.row.price}}</b>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="商品数量" prop="num">
+                    <template #default="scope">
+                      x{{scope.row.num}}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="操作" width="100" fixed="right">
+                    <template v-slot="scope">
+                      <el-button size="small" type="primary" plain @click="handleComment(scope.row)" v-if="props.row.status==='已完成'">评价</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
               </div>
 
 
             </template>
           </el-table-column>
           <el-table-column prop="name" label="订单名称" show-overflow-tooltip />
-          <el-table-column prop="orderNo" label="订单编号" />
+          <el-table-column prop="orderNo" label="订单编号"show-overflow-tooltip />
           <el-table-column prop="total" label="总价格" >
             <template #default="scope">
               <b style="color:red">￥{{scope.row.total}}</b>
             </template>
           </el-table-column>
-          <el-table-column prop="time" label="下单时间" />
-          <el-table-column prop="userName" label="下单者" />
-          <el-table-column  label="收货信息" >
+          <el-table-column prop="time" label="下单时间" width="180px" show-overflow-tooltip />
+<!--          <el-table-column prop="userName" label="下单者" />-->
+          <el-table-column  label="收货信息" show-overflow-tooltip>
             <template #default="scope">
+<!--              收货者姓名没获取到-->
               {{scope.row.addressName}}|{{scope.row.addressPhone}}|{{scope.row.address}}
             </template>
           </el-table-column>
@@ -51,9 +68,10 @@
               <el-tag type="success" v-if="scope.row.status==='已完成'">已完成</el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="100" fixed="right">
+          <el-table-column label="操作" width="140" fixed="right">
             <template v-slot="scope">
-              <el-button type="danger" plain @click="del(scope.row.id)">取消</el-button>
+              <el-button size="small"  type="primary" plain @click="handlePay(scope.row.id)" >支付</el-button>
+              <el-button size="small" type="danger" plain @click="cancel(scope.row)" >取消</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -64,12 +82,37 @@
       <el-pagination @current-change="load"  layout="total,prev,pager,next"  :page-size="data.pageSize" v-model:current-page="data.pageNum" :total="data.total"/>
     </div>
 
+    <el-dialog title="支付" v-model="data.formVisible" width="30%" destroy-on-close>
+      <div style="text-align: center; padding: 50px 0;">
+        <el-radio-group v-model="data.payType">
+          <el-radio value="zfb">
+            <div style="display: flex; align-items: center;"><img src="@/assets/imgs/zfb.png" alt="" style="width: 50px; height: 50px">
+              <span style="font-size: 20px; margin-left: 10px">支付宝</span>
+            </div>
+          </el-radio>
+          <el-radio value="wx">
+            <div style="display: flex; align-items: center;"><img src="@/assets/imgs/wx.png" alt="" style="width: 50px; height: 50px">
+              <span style="font-size: 20px; margin-left: 10px">微信支付</span>
+            </div>
+          </el-radio>
+        </el-radio-group>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="data.formVisible = false">取 消</el-button>
+          <el-button type="primary" @click="pay">确定支付</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
   </div>
 </template>
 <script setup>
 import {reactive} from "vue";
 import {ElMessage, ElMessageBox} from "element-plus";
 import request from "@/utils/request.js";
+import router from "@/router/index.js";
+import {Delete} from "@element-plus/icons-vue";
 
 const baseUrl=import.meta.env.VITE_BASE_URL
 
@@ -77,7 +120,9 @@ const handleFileUpload=(res) =>{
   data.form.avatar=res.data
 }
 
+
 const data=reactive({
+  user:JSON.parse(localStorage.getItem('xm-user')||'{}'),
   formVisible:false, //弹出对话框el-daiglog，初始为不弹出
   form:{},//数据存储在from中，form联通了Account类的属性,先清空表单
   tableData:[],
@@ -85,8 +130,28 @@ const data=reactive({
   pageSize:5,
   total:0,
   orderNo:null,
-  ids:[]
+  ids:[],
+  orderId:null,
+  payType:'zfb',
 })
+
+const handlePay=(orderId)=>{
+  data.orderId=orderId
+  data.formVisible=true
+}
+const pay = () => {
+  request.put('/orders/pay/' + data.orderId).then(res => {
+    if (res.code === '200') {
+      ElMessage.success('支付成功')
+      data.formVisible = false
+      load()
+    } else {
+      ElMessage.error('支付失败：' + res.msg)
+    }
+  }).catch(err => {
+    ElMessage.error("支付异常：网络或服务错误")
+  })
+}
 
 //查询表数据的接口
 const load=()=>{
@@ -94,7 +159,8 @@ const load=()=>{
     params:{
       pageNum: data.pageNum,
       pageSize: data.pageSize,
-      orderNo: data.orderNo
+      orderNo: data.orderNo,
+      userId:data.user.id,
     }
   }).then(res =>{
     console.log('完整响应数据：', res);
@@ -126,7 +192,7 @@ const delBatch = () => {
       { type: 'warning' }
   ).then(async () => {
     try {
-      // 2. 重点：POST请求，路径改为/orders/batch/delete
+      // 2. POST请求，路径改为/orders/batch/delete
       const res = await request.post("/orders/batch/delete", data.ids);
       if (res.code === '200') {
         ElMessage.success('批量删除成功');
@@ -136,7 +202,6 @@ const delBatch = () => {
       }
     } catch (err) {
       console.error('批量删除失败详情：', err);
-      // 精准提示不同错误类型
       if (err.response?.status === 405) {
         ElMessage.error('接口请求方式错误，请检查后端接口注解');
       } else if (err.response?.status === 404) {
@@ -234,6 +299,23 @@ const update = async (formData) => {
   }
 }
 
+
+// 3. 更新函数：增加多层防御，避免 undefined
+const cancel = async (formData) => {
+  ElMessageBox.confirm('订单取消后无法恢复，是否确认取消?','订单取消确认',{type:'warning' }).then(res=>{
+    let form=JSON.parse(JSON.stringify(row));
+    form.status='已取消';
+    request.put('/orders/update',form).then(res=>{
+      if(res.code==='200'){
+        ElMessage.success('取消订单成功')
+        load()
+      }else{
+        ElMessage.error('修改失败：' + res.msg);
+      }
+    })
+  }).catch()
+
+}
 
 
 //确认操作的save对应的函数，函数还会结合request发送交互前后台的请求，然后函数save会调用request.js的接口

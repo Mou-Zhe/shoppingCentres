@@ -97,6 +97,8 @@ const loadUser=()=>{
   })
 }
 
+loadUser()
+
 // 基础URL（确保.env文件中配置了VITE_BASE_URL）
 const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:9090';
 

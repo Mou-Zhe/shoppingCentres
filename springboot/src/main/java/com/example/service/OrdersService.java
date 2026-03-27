@@ -26,8 +26,6 @@ import java.util.List;
 public class OrdersService {
 
     @Resource
-    private OrdersMapper orderMapper;
-    @Resource
     private AddressService addressService;
     @Resource
     private OrderDetailMapper  orderDetailMapper;
@@ -37,6 +35,8 @@ public class OrdersService {
     private OrdersMapper ordersMapper;
     @Resource
     private CartService cartService;
+    @Resource
+    private UserService userService;
 
     @Transactional  //代码抛异常 → 数据库操作自动撤销立即回滚，具有原子性，电商、支付、购物车、订单的add必须加，否则会出大问题
     public void add(Integer addressId, List<Cart> cartList) {
@@ -106,17 +106,17 @@ public class OrdersService {
     }
 
     public List<Orders> selectAll(Orders order) {
-        return orderMapper.selectAll(order);
+        return ordersMapper.selectAll(order);
     }
 
     public Orders selectById(Integer id) {
-        return orderMapper.selectById(id);
+        return ordersMapper.selectById(id);
     }
 
     //分页查询的方法
     public PageInfo<Orders> selectPage(Orders orders, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum,pageSize);
-        List<Orders> list=orderMapper.selectAll(orders);
+        List<Orders> list=ordersMapper.selectAll(orders);
         for (Orders o : list) {//循环获取订单详细数据
             Integer orderId=o.getId();
             List<OrderDetail> orderDetails = orderDetailMapper.selectByOrderId(orderId);
@@ -126,19 +126,59 @@ public class OrdersService {
     }
 
     public void updateById(Orders order) {
-        orderMapper.updateById(order);
+        ordersMapper.updateById(order);
     }
 
     public void deleteById(Integer id) {
-        orderMapper.deleteById(id);
+        ordersMapper.deleteById(id);
     }
 
     public void deleteBatch(@RequestBody List<Integer> ids) {
         for (Integer id:ids){
-            orderMapper.deleteById(id);
+            ordersMapper.deleteById(id);
         }
     }
 
+//    @Transactional
+//    public void pay(Integer orderId) {
+//        Account currentUser = TokenUtils.getCurrentUser();
+//        User user=userService.selectById(currentUser.getId());
+//        Orders orders = ordersMapper.selectById(orderId);
+//        BigDecimal account=user.getAccount();
+//        if(account.compareTo(orders.getTotal())<0){
+//            throw new CustomException("500","对不起，您的余额不足，需要充值");
+//        }
+//        user.setAccount(user.getAccount().subtract(orders.getTotal()));
+//        userService.updateById(user);
+//        orders.setStatus("待发货");
+//        ordersMapper.updateById(orders);
+//    }
+@Transactional
+public void pay(Integer orderId) {
+    Account currentUser = TokenUtils.getCurrentUser();
+    User user = userService.selectById(currentUser.getId());
+    Orders orders = ordersMapper.selectById(orderId);
 
+    // ========== bug修复操作：依次判空 ==========
+    if (orders == null) {
+        throw new CustomException("500", "订单不存在");
+    }
+    if (orders.getTotal() == null) {
+        throw new CustomException("500", "订单金额异常");
+    }
+    if (user.getAccount() == null) {
+        throw new CustomException("500", "用户余额未初始化");
+    }
 
+    BigDecimal account = user.getAccount();
+    if (account.compareTo(orders.getTotal()) < 0) {
+        throw new CustomException("500", "余额不足，请充值");
+    }
+
+    user.setAccount(user.getAccount().subtract(orders.getTotal()));
+    userService.updateById(user);
+
+    orders.setStatus("待发货");
+    ordersMapper.updateById(orders);
+}
 }

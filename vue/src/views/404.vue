@@ -15,3 +15,21 @@
 <!--//Ctrl + Alt + F → 生成成员变量-->
 <!--//Ctrl + Alt + C → 生成常量-->
 <!--//Ctrl + Alt + L → 格式化代码-->
+
+
+<!--1. 回退到上一个版本-->
+<!--powershell-->
+<!--git reset &#45;&#45;hard HEAD^-->
+<!--git push -f origin main-->
+<!--2. 回退到当前这个版本（你现在的 V6）-->
+<!--powershell-->
+<!--git reset &#45;&#45;hard 10fc0a4-->
+<!--git push -f origin main-->
+<!--3. 下载 GitHub 最新代码到本地-->
+<!--powershell-->
+<!--git pull origin main-->
+<!--4. 提交新代码并上传-->
+<!--powershell-->
+<!--git add .-->
+<!--git commit -m "谋者更新"-->
+<!--git push origin main-->
