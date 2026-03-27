@@ -1,0 +1,219 @@
+/* 头部容器 - 关键：添加 align-items: center 强制所有子元素垂直居中 */
+.front-header {
+    display: flex;
+    align-items: center; /* 新增：垂直居中所有子元素 */
+    height: 60px;
+    /* 移除 line-height: 60px; 避免和 flex 对齐冲突 */
+    border-bottom: 1px solid #eee;
+    background: #e9f2ff;
+}
+
+.front-header-left {
+    width: 350px;
+    display: flex;
+    align-items: center; /* 保持子元素垂直居中 */
+    padding-left: 30px;
+}
+
+.front-header-left img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.front-header-left .title {
+    color: #656aba;
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.front-header-center {
+    flex: 1;
+    display: flex;
+    align-items: center; /* 保持子元素垂直居中 */
+    /* 可选：给中间菜单加左右间距，避免和左右挤在一起 */
+    padding: 0 20px;
+}
+
+/* 右侧头像容器 - 修复 Element-Plus 下拉菜单的默认样式 */
+.front-header-right {
+    padding-right: 20px;
+    display: flex; /* 新增：flex 布局 */
+    align-items: center; /* 新增：垂直居中头像 */
+    height: 100%; /* 撑满头部高度，确保对齐 */
+}
+
+/* 修复 Element-Plus 下拉菜单的高度干扰 */
+.front-header-right .el-dropdown {
+    height: 100%; /* 撑满父容器 */
+    display: flex; /* 新增 */
+    align-items: center; /* 新增：头像垂直居中 */
+}
+
+/* 用户头像样式 - 统一大小和对齐 */
+.front-header-right .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    /* 可选：加边框，和左侧logo样式统一 */
+    border: 1px solid #ddd;
+    vertical-align: middle; /* 兼容行内元素对齐 */
+}
+
+.main-content {
+    width: 80%;
+    margin: 5px auto;
+}
+
+/* Element-Plus样式覆盖 - 补充菜单对齐 */
+.el-menu-item:hover {
+    background-color: #d3e6fd !important;
+}
+.el-menu--horizontal {
+    border: none !important;
+    height: 100%; /* 改为100%，适配头部高度 */
+    align-items: center; /* 新增：菜单选项垂直居中 */
+}
+.el-tooltip__trigger {
+    outline: none;
+}
+
+
+
+
+
+
+/*.front-header {*/
+/*    display: flex;*/
+/*    height: 60px;*/
+/*    line-height: 60px;*/
+/*    border-bottom: 1px solid #eee;*/
+/*    background: #e9f2ff;*/
+/*}*/
+
+/*.front-header-left {*/
+/*    width: 350px;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    padding-left: 30px;*/
+/*}*/
+
+/*.front-header-left img {*/
+/*    width: 40px;*/
+/*    height: 40px;*/
+/*    border-radius: 50%;*/
+/*}*/
+
+/*.front-header-left .title {*/
+/*    color: #656aba;*/
+/*    cursor: pointer;*/
+/*    margin-left: 10px;*/
+/*    font-size: 20px;*/
+/*    font-weight: bold;*/
+/*}*/
+
+/*.front-header-center {*/
+/*    flex: 1;!*自适应宽度即可*!*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*}*/
+
+/*.front-header-right {*/
+/*    padding-right: 20px;*/
+/*}*/
+
+/*.main-content {*/
+/*    width: 80%;*/
+/*    margin: 5px auto;*/
+/*}*/
+
+/*!*Element-Plus样式覆盖*!*/
+/*.el-menu-item:hover {*/
+/*    background-color: #d3e6fd !important;*/
+/*}*/
+/*.el-menu--horizontal {*/
+/*    border: none !important;*/
+/*    height: 59px;*/
+/*}*/
+/*.el-tooltip__trigger {*/
+/*    outline: none;*/
+/*}*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*.front-notice{*/
+/*    padding: 5px 20px;*/
+/*    color: #666;*/
+/*    font-size: 12px;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*}*/
+/*.front-header{*/
+/*    display: flex;*/
+/*    !*align-items: center;右边头像居中一些，失效*!*/
+/*    height: 60px;*/
+/*    line-height: 60px;*/
+/*    border-bottom: 1px solid #eeeeee;*/
+/*}*/
+/*.front-header-left{*/
+/*    width:350px;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    padding-left: 30px;*/
+/*}*/
+
+/*.front-header-left img{*/
+/*    width: 40px;*/
+/*    height: 40px;*/
+/*    border-radius: 50%;*/
+/*}*/
+
+/*.front-header-left .title{*/
+/*    color: #333;*/
+/*    cursor: pointer;!*鼠标变成小手格式*!*/
+/*    margin-left: 10px;*/
+/*    font-size: 20px;*/
+/*    font-weight: bold;*/
+/*}*/
+
+/*.front-header-center{*/
+/*    flex: 1;*/
+/*}*/
+/*.front-header-right{*/
+/*    !*padding-right: 10px;右边头像向左对齐一些，已经在vue的div中设置了*!*/
+/*    outline: none;!*头像无边框化*!*/
+/*    padding-right: 20px;*/
+/*}*/
+/*.front-header-right .el-dropdown{*/
+/*    height: 60px;!*设置头像向下移动到合适位置*!*/
+/*}*/
+/*!*element-plus的样式覆盖原本样式,将menu无边框化*!*/
+/*.el-menu--horizontal{*/
+/*    border:none !important;!*中间的menu无边框化*!*/
+/*    height: 59px;!*解决下方区域覆盖头部区域的边框确定线的问题*!*/
+/*}*/
+/*.el-tooltip__trigger{*/
+/*    outline: none;*/
+/*}*/
+/*.main-center{*/
+/*    !*主体子页面的样式*!*/
+/*    width: 80px;*/
+/*    margin: 5px auto;!*居中*!*/
+/*}*/

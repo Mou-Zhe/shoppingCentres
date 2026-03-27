@@ -1,0 +1,55 @@
+<!--固定的头字段-->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--固定的头字段-->
+
+<mapper namespace="com.example.mapper.CategoryMapper">
+
+    <select id="selectAll" resultType="com.example.entity.Category">
+        select * from `category`
+        <where>
+            <!-- 修复：补充空字符串判断，去掉冗余的 and（where 标签会自动处理） -->
+            <if test="name != null and name != ''">
+                name like concat('%', #{name}, '%')
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+    <delete id="deleteById">
+        <!-- 去掉表名的单引号，直接写表名 -->
+        delete from category
+        where id=#{id}
+    </delete>
+
+    <!-- insert into category (username, password, ...) values ('category', 'category', ...) -->
+    <insert id="insert" parameterType="com.example.entity.Category" useGeneratedKeys="true">
+        insert into `category`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+--             取值需要#
+            <if test="id != null">#{id},</if>
+            <if test="name != null">#{name},</if>
+        </trim>
+    </insert>
+
+
+    <update id="updateById" parameterType="com.example.entity.Category">
+        update `category`
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+        </set>
+        where id = #{id}
+        <!-- 补充：确保 id 不为空，避免全表更新 -->
+        <if test="id == null">
+            AND 1 = 0
+        </if>
+    </update>
+
+</mapper>

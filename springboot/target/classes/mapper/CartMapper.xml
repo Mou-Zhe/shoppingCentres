@@ -1,0 +1,64 @@
+<!--固定的头字段-->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--固定的头字段-->
+
+<mapper namespace="com.example.mapper.CartMapper">
+
+    <select id="selectAll" resultType="com.example.entity.Cart">
+        select cart.*,goods.name as goodsName,goods.img as goodsImg ,goods.price as goodsPrice from `cart`
+            left join goods on cart.goods_id=goods.id
+        <where>
+            <!-- 修复：补充空字符串判断，去掉冗余的 and（where 标签会自动处理） -->
+            <if test="userId != null and userId != ''">cart.user_id = #{userId}</if>
+        </where>
+        order by cart.id desc
+    </select>
+
+    <delete id="deleteById">
+        <!-- 去掉表名的单引号，直接写表名 -->
+        delete from cart
+        where id=#{id}
+    </delete>
+
+    <!-- insert into cart (username, password, ...) values ('cart', 'cart', ...) -->
+    <insert id="insert" parameterType="com.example.entity.Cart" useGeneratedKeys="true">
+        insert into `cart`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="goodsId != null">goods_id,</if>
+            <if test="num != null">num,</if>
+            <if test="userId != null">user_id,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="goodsId != null">#{goodsId},</if>
+            <if test="num != null">#{num},</if>
+            <if test="userId != null">#{userId},</if>
+        </trim>
+
+    </insert>
+
+
+    <update id="updateById" parameterType="com.example.entity.Cart">
+        update `cart`
+        <set>
+            <if test="id != null">
+                id = #{id},
+            </if>
+            <if test="goodsId != null">
+                goods_id = #{goodsId},
+            </if>
+            <if test="num != null">
+                num = #{num},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

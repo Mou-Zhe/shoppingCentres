@@ -1,0 +1,56 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.BannerMapper">
+
+    <select id="selectAll" resultType="com.example.entity.Banner">
+        select banner.*, goods.name as goodsName from `banner`
+        left join goods on banner.goods_id = goods.id
+        <where>
+            <if test="goodsName != null"> and goods.name like concat('%', #{goodsName}, '%')</if>
+        </where>
+        order by banner.id desc
+    </select>
+
+    <delete id="deleteById">
+        delete from `banner`
+        where id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Banner" useGeneratedKeys="true">
+        insert into `banner`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="img != null">img,</if>
+            <if test="goodsId != null">goods_id,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="img != null">#{img},</if>
+            <if test="goodsId != null">#{goodsId},</if>
+        </trim>
+
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Banner">
+        update `banner`
+        <set>
+            <if test="id != null">
+                id = #{id},
+            </if>
+            <if test="img != null">
+                img = #{img},
+            </if>
+            <if test="goodsId != null">
+                goods_id = #{goodsId},
+            </if>
+        </set>
+        where id = #{id}
+        <!-- 补充：确保 id 不为空，避免全表更新 -->
+        <if test="id == null">
+            AND 1 = 0
+        </if>
+    </update>
+
+</mapper>

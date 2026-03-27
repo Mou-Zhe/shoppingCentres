@@ -1,0 +1,69 @@
+<!--固定的头字段-->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--固定的头字段-->
+
+<mapper namespace="com.example.mapper.OrderDetailMapper">
+
+    <select id="selectAll" resultType="com.example.entity.OrderDetail">
+        select * from `order_detail`
+        <where>
+            <!-- 修复：补充空字符串判断，去掉冗余的 and（where 标签会自动处理） -->
+            <if test="orderId != null and orderId != ''">
+                order_detail.order_id like concat('%', #{orderId}, '%')
+            </if>
+
+        </where>
+    </select>
+
+    <delete id="deleteById">
+        <!-- 去掉表名的单引号，直接写表名 -->
+        delete from order_detail
+        where id=#{id}
+    </delete>
+
+    <!-- insert into order_detail (username, password, ...) values ('order_detail', 'order_detail', ...) -->
+    <insert id="insert" parameterType="com.example.entity.OrderDetail" useGeneratedKeys="true" >
+        insert into `order_detail`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="goodsName != null">goods_name,</if>
+            <if test="goodsImg != null">goods_img,</if>
+            <if test="goodsId != null">goods_id,</if>
+            <if test="num != null">num,</if>
+            <if test="price != null">price,</if>
+            <if test="orderId != null">order_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+--             取值需要#,防止sql注入bug
+            <if test="id != null">#{id},</if>
+            <if test="goodsName != null">#{goodsName},</if>
+            <if test="goodsImg != null">#{goodsImg},</if>
+            <if test="goodsId != null">#{goodsId},</if>
+            <if test="num != null">#{num},</if>
+            <if test="price != null">#{price},</if>
+            <if test="orderId != null">#{orderId},</if>
+        </trim>
+    </insert>
+
+
+    <update id="updateById" parameterType="com.example.entity.OrderDetail">
+        update `order_detail`
+        <set>
+            <if test="id != null and id != ''">id = #{id},</if>
+            <if test="goodsName != null and goodsName != ''">goods_name = #{goodsName},</if>
+            <if test="goodsImg != null and goodsImg != ''"> goods_img = #{goodsImg},</if>
+            <if test="goodsId != null and goodsId != ''"> goods_id = #{goodsId},</if>
+            <if test="num != null and num != ''"> num = #{num},</if>
+            <if test="price != null and price != ''"> price = #{price},</if>
+            <if test="orderId != null and orderId != ''"> order_id = #{orderId},</if>
+        </set>
+        where id = #{id}
+        <!-- 补充：确保 id 不为空，避免全表更新 -->
+        <if test="id == null">
+            AND 1 = 0
+        </if>
+    </update>
+
+</mapper>

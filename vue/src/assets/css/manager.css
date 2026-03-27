@@ -1,0 +1,103 @@
+.manager_container{
+    background-color:#f8f8ff;
+    min-height: 100vh;
+    /*最低高度100vh,100vh刚好占满屏幕*/
+}
+
+.manager-header{
+    height: 60px;
+    background-color: #0066bc;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 1px 4px rgba(0,21,41,.08);
+}
+.manager-header-left{
+    background-color: #0066bc;
+    width: 200px;
+    height: 100%;
+    padding-left:10px;
+    display: flex;
+    align-items: center;
+}
+
+.manager-header-left img{
+    width:30px;
+    height: 30px;
+}
+.manager-header-center{
+    flex:1;/*自适应宽度*/
+}
+/*.manager-header-right{*/
+
+/*}*/
+.manager-header-left .title{
+    font-weight: bold;
+    font-size: 18px;
+    margin-left: 10px;
+    color:white;
+}
+
+.el-tooltip__trigger{
+    outline: none;
+}
+
+:deep(.el-sub-menu__title){
+    color: #ddd !important;
+    height: 50px;
+    line-height: 50px;
+    background-color: #011223 !important;
+}
+
+.el-sub-menu__title:hover{
+    color: #ffffff;
+}
+
+.el-menu-item{
+    color: #ffffff;
+    height: 50px;
+    line-height: 50px;
+    background-color: #000b17 !important;
+}
+
+.el-menu-inline .el-menu-item{
+    padding-left:50px;
+
+}
+
+.manager-main-left{
+    width: 200px;
+    min-shadow:0 0 6px rgba(0,21,41,.33);
+    min-height: calc(100vh - 60px);
+}
+
+.manager-main-right{
+    flex:1;
+    width: 0;/*不突出到外围*/
+    background-color: #f8f8ff;
+    padding: 10px;/*距离边框10px*/
+}
+
+.el-menu .is-active{
+    color: #fff !important;
+    background-color: #1890ff !important;
+}
+
+.el-menu-item:not(.is-active):hover{/*没有高亮的需要触摸才高亮*/
+    color: #fff !important;
+    background-color: #1890ff !important;
+}
+
+.el-menu{
+    width: 200px;
+    height: 100%;
+    background-color: #00162a;
+}
+
+
+/*element-plus的样式覆盖原本样式*/
+:deep(.el-breadcrumb__inner) {
+    color: white !important;
+}
+:deep(.el-breadcrumb__separator){
+    color: white !important;
+}

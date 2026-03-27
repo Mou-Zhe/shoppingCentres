@@ -1,0 +1,59 @@
+<!--固定的头字段-->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--固定的头字段-->
+
+<mapper namespace="com.example.mapper.NoticeMapper">
+
+    <select id="selectAll" resultType="com.example.entity.Notice">
+        select * from `notice`
+        <where>
+            <!-- 修复：补充空字符串判断，去掉冗余的 and（where 标签会自动处理） -->
+            <if test="title != null and title != ''">
+                title like concat('%', #{title}, '%')
+            </if>
+
+        </where>
+    </select>
+
+    <delete id="deleteById">
+        <!-- 去掉表名的单引号，直接写表名 -->
+        delete from notice
+        where id=#{id}
+    </delete>
+
+    <!-- insert into notice (username, password, ...) values ('notice', 'notice', ...) -->
+    <insert id="insert" parameterType="com.example.entity.Notice" useGeneratedKeys="true">
+        insert into `notice`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+<!--            <if test="id != null">id,</if>-->
+            <if test="title != null">title,</if>
+            <if test="content != null">content,</if>
+            <if test="time != null">time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+--             取值需要#
+<!--            <if test="id != null">#{id},</if>-->
+            <if test="title != null">#{title},</if>
+            <if test="content != null">#{content},</if>
+            <if test="time != null">#{time},</if>
+        </trim>
+    </insert>
+
+
+    <update id="updateById" parameterType="com.example.entity.Notice">
+        update `notice`
+        <set>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="content != null and content != ''"> content = #{content},</if>
+            <if test="time != null and time != ''">time = #{time},</if>
+        </set>
+        where id = #{id}
+        <!-- 补充：确保 id 不为空，避免全表更新 -->
+        <if test="id == null">
+            AND 1 = 0
+        </if>
+    </update>
+
+</mapper>

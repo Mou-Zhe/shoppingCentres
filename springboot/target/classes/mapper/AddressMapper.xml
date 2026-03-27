@@ -1,0 +1,69 @@
+<!--固定的头字段-->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--固定的头字段-->
+
+<mapper namespace="com.example.mapper.AddressMapper">
+
+    <select id="selectAll" resultType="com.example.entity.Address">
+        select * from `address`
+                 <where>
+                     <if test="userId!=null">user_id=#{userId}</if>
+                 </where>
+                 order by id desc
+    </select>
+
+    <delete id="deleteById">
+        <!-- 去掉表名的单引号，直接写表名 -->
+        delete from address
+        where id=#{id}
+    </delete>
+
+    <!-- insert into address (username, password, ...) values ('address', 'address', ...) -->
+    <insert id="insert" parameterType="com.example.entity.Address" useGeneratedKeys="true">
+        insert into `address`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="name != null">name,</if>
+            <if test="phone != null">phone,</if>
+            <if test="address != null">address,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="name != null">#{name},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="address != null">#{address},</if>
+        </trim>
+    </insert>
+
+
+    <update id="updateById" parameterType="com.example.entity.Address">
+        update `address`
+        <set>
+            <if test="id != null and id != ''">
+                id = #{id},
+            </if>
+            <if test="userId != null and userId != ''">
+                user_id = #{userId},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+        </set>
+        where id = #{id}
+        <!-- 补充：确保 id 不为空，避免全表更新 -->
+        <if test="id == null">
+            AND 1 = 0
+        </if>
+    </update>
+
+</mapper>

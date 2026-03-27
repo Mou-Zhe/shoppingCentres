@@ -1,0 +1,71 @@
+# 服务器配置
+server:
+  port: 9090
+
+# 数据库核心配置（已验证格式正确）
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: password  # 注意：如果密码包含特殊字符，需要用引号包裹，如 "password!"
+    url: jdbc:mysql://localhost:3306/xm_snack_mall?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2b8&allowPublicKeyRetrieval=true
+
+fileBaseUrl: http://localhost:${server.port}
+
+# MyBatis 核心配置（删除冲突的 mybatis-plus 配置）
+mybatis:
+  configuration:
+    # 控制台打印SQL（开发阶段建议开启）
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 下划线转驼峰命名（如 user_name → userName）
+    map-underscore-to-camel-case: true
+    # 强制开启自动映射（解决隐性的映射关闭问题）
+    auto-mapping-beans: true
+    # 遇到未知列时不报错（避免因字段冗余导致映射失败）
+    auto-mapping-unknown-column-behavior: NONE
+  # 扫描XML映射文件（确保路径和实际文件一致）
+  mapper-locations: classpath:mapper/*.xml
+  # 可选：实体类别名包（简化XML中的类名）
+  type-aliases-package: com.example.entity
+
+
+# 日志配置（打印Mapper层详细日志，方便调试）
+logging:
+  level:
+    # 替换成你实际的mapper包路径，DEBUG级别打印SQL
+    com.example.mapper: DEBUG
+    # 可选：打印Spring数据源日志，排查连接问题
+    com.zaxxer.hikari: DEBUG
+    # 新增：打印SpringMVC接口映射日志（关键！）
+    org.springframework.web: INFO
+    # 新增：打印SpringBoot启动扫描日志（排查Controller扫描问题）
+    org.springframework.context.annotation: INFO
+
+#server:
+#  port: 9090
+#
+## 数据库配置
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    username: root
+#    password: password
+#    url: jdbc:mysql://localhost:3306/system?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2b8&allowPublicKeyRetrieval=true
+#
+## 配置mybatis实体和xml映射
+#mybatis:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#    map-underscore-to-camel-case: true
+#  mapper-locations: classpath:mapper/*.xml
+#
+##配置MybatisX查看完整SQL
+#mybatis-plus:
+#  configuration:
+#    #控制台输出SQL（必须开启，MybatisX才可以解析）
+#  log-impl:
+#    org.apache.ibatis.logging.stdout.StdOutImpl
+#  #可选，让Mapper包日志更加详细
+#  logging:
+#    level:
+#      com.example.mapper.debug  #mapper包的路径
