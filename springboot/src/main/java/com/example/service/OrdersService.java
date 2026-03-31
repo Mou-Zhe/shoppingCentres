@@ -125,7 +125,30 @@ public class OrdersService {
         return PageInfo.of(list);
     }
 
+    @Transactional
     public void updateById(Orders order) {
+        if(order.getStatus().equals("已取消")){
+            List<OrderDetail> orderDetailList=orderDetailMapper.selectByOrderId(order.getId());
+            for (OrderDetail orderDetail : orderDetailList) {
+                Integer goodsId=orderDetail.getGoodsId();
+                Goods goods=goodsService.selectById(goodsId);
+                if(goods!=null){
+                    goods.setStore(orderDetail.getNum()+goods.getStore());
+                    goodsService.updateById(goods);
+                }
+            }
+        }
+        if(order.getStatus().equals("已完成")){
+            List<OrderDetail> orderDetailList=orderDetailMapper.selectByOrderId(order.getId());
+            for (OrderDetail orderDetail : orderDetailList) {
+                Integer goodsId=orderDetail.getGoodsId();
+                Goods goods=goodsService.selectById(goodsId);
+                if(goods!=null){
+                    goods.setSaleCount(orderDetail.getNum()+goods.getSaleCount());
+                    goodsService.updateById(goods);
+                }
+            }
+        }
         ordersMapper.updateById(order);
     }
 
