@@ -50,6 +50,7 @@
             <el-menu-item index="/manager/banner">商品轮播信息</el-menu-item>
             <el-menu-item index="/manager/collect">商品收藏信息</el-menu-item>
             <el-menu-item index="/manager/orders">订单信息</el-menu-item>
+            <el-menu-item index="/manager/comment">商品评价</el-menu-item>
             <el-menu-item index="1-2">item two</el-menu-item>
           </el-sub-menu>
           <el-sub-menu index="2">

@@ -19,7 +19,8 @@ const router = createRouter({
           {path: 'banner',meta:{name:'商品轮播图'} , component: () => import('@/views/manager/Banner.vue'),},
           {path: 'collect',meta:{name:'商品收藏信息'} , component: () => import('@/views/manager/Collect.vue'),},
           {path: 'goods',meta:{name:'商品信息'} , component: () => import('@/views/manager/Goods.vue'),},
-          {path: 'orders',meta:{name:'收货信息'} , component: () => import('@/views/manager/Orders.vue'),}
+          {path: 'orders',meta:{name:'收货信息'} , component: () => import('@/views/manager/Orders.vue'),},
+          {path: 'comment',meta:{name:'商品评价'} , component: () => import('@/views/manager/Comment.vue'),}
       ]/*子路由，不用/*/
       /*以下四句是转向另一个vue页面
       path:'/',

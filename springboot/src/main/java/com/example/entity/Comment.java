@@ -11,6 +11,46 @@ public class Comment {
     private Integer goodsId;
     /**时间**/
     private String time;
+    /**用户名称**/
+    private String userName;
+    /**用户角色**/
+    private String userAvatar;
+    /**商品名称**/
+    private String goodsName;
+    /**商品图片**/
+    private String goodsImg;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserAvatar() {
+        return userAvatar;
+    }
+
+    public void setUserAvatar(String userAvatar) {
+        this.userAvatar = userAvatar;
+    }
+
+    public String getGoodsName() {
+        return goodsName;
+    }
+
+    public void setGoodsName(String goodsName) {
+        this.goodsName = goodsName;
+    }
+
+    public String getGoodsImg() {
+        return goodsImg;
+    }
+
+    public void setGoodsImg(String goodsImg) {
+        this.goodsImg = goodsImg;
+    }
 
     public Integer getId() {
         return id;
