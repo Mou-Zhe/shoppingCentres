@@ -29,7 +29,24 @@
           </div>
         </div>
       </div>
-      <div>
+
+      <div class="card" style="padding: 20px;margin: 20px 0">
+        <div style="font-size: 20px;font-weight: bold;margin-bottom: 40px">用户评价({{data.total}})</div><!--div更换h2，不需要h2的默认边框-->
+        <div>
+          <div v-for="item in data.commentList" :key="item.id">
+            <div style="display: flex; grid-gap: 20px;margin-bottom: 15px">
+              <img style="width: 50px;height: 50px;border-radius: 50%" :src="item.userAvatar" alt="">
+              <div style="flex:1;border-bottom: 1px solid #ddd;padding-bottom: 15px">
+                <div style="margin-bottom: 5px">{{item.userName}}</div>
+                <div style="margin-bottom: 5px;color: #888;font-size: 12px">{{item.time}}·{{item.goodsName}}</div>
+                <div >{{item.content}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-if="data.total">
+          <el-pagination @current-change="load"  layout="total,prev,pager,next"  :page-size="data.pageSize" v-model:current-page="data.pageNum" :total="data.total"/>
+        </div>
       </div>
     </div>
     <el-dialog title="立即购买" v-model="data.formVisible" width="40%" destroy-on-close>
@@ -68,7 +85,36 @@ const data=reactive({//获取当前路径附带的id
   formVisible:false,
   addressId:null,
   addressList:[],
+  total:0,
+  pageNum:1,
+  pageSize:10,
+  commentList:[],
 })
+
+//查询表数据的接口
+const loadComment=()=>{
+  request.get('/comment/selectPage',{
+    params:{
+      pageNum: data.pageNum,
+      pageSize: data.pageSize,
+      goodsId: data.id
+    }
+  }).then(res =>{
+    console.log('完整响应数据：', res);
+    // 修复判断逻辑：根据 msg 或 code 是否为 null 来判断（适配后端返回）
+    if(res.msg === "请求成功" || res.data) {
+      data.commentList = res.data?.list || [];
+      data.total = res.data?.total || 0;
+      ElMessage.success('查询成功，共 ' + data.total + ' 条评价数据');
+    } else {
+      ElMessage.error('查询失败：' + (res.msg || '未知错误'));
+    }
+  }).catch(err => {
+    console.error("请求异常：", err);
+    ElMessage.error('网络异常，请重试');
+  });
+}
+loadComment()
 
 const buy=()=>{
   if(!data.addressId){

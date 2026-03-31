@@ -16,6 +16,7 @@
     <div class="card" style="margin-bottom: 5px">
       <el-table stripe :data="data.tableData" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
+        <el-table-column prop="content" label="评价内容" show-overflow-tooltip/>
         <el-table-column label="商品图片">
           <template #default="scope">
             <el-image style="width: 50px; height: 50px; display: block; border-radius: 5px" :src="scope.row.goodsImg" :preview-src-list="[scope.row.goosImg]" preview-teleported></el-image>
