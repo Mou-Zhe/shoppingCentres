@@ -105,7 +105,20 @@
         </span>
       </template>
     </el-dialog>
-
+    <!--    输入表数据-->
+    <el-dialog title="商品评价" v-model="data.formVisible1" width="40%" destroy-on-close>
+      <el-form ref="form" :model="data.form1" label-width="70px" style="padding:20px">
+        <el-form-item prop="content" label="评价内容">
+          <el-input type="textarea" v-model="data.form1.content" placeholder="请输入评价内容"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span  class="dialog-footer">
+         <el-button @click="data.formVisible1=false">取消</el-button>
+         <el-button type="primary"  @click="saveComment">确定</el-button><!--确认后需要连接后端交互信息，在这之前需要进行数据效验-->
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script setup>
@@ -125,7 +138,9 @@ const handleFileUpload=(res) =>{
 const data=reactive({
   user:JSON.parse(localStorage.getItem('xm-user')||'{}'),
   formVisible:false, //弹出对话框el-daiglog，初始为不弹出
+  formVisible1:false, //弹出对话框el-daiglog，初始为不弹出
   form:{},//数据存储在from中，form联通了Account类的属性,先清空表单
+  form1:{},//数据存储在from中，form联通了Account类的属性,先清空表单
   tableData:[],
   pageNum:1,
   pageSize:5,
@@ -135,6 +150,28 @@ const data=reactive({
   orderId:null,
   payType:'zfb',
 })
+
+const handleComment=(row)=>{
+  data.formVisible1=true//打开弹窗
+  data.form1={userId:data.user.id,goodsId:row.goodsId}
+}
+
+const saveComment=()=>{
+  if(!data.form1.content){
+    ElMessage.warning('请输入评价内容')
+    return
+  }
+  request.post('/comment/add',data.form1).then(res => {
+    if (res.code === '200') {
+      ElMessage.success('评价成功')
+      data.formVisible = false
+    } else {
+      ElMessage.error('评价失败：' + res.msg)
+    }
+  }).catch(err => {
+    ElMessage.error("评价异常：网络或服务错误")
+  })
+}
 
 // 3. 前台收货更新函数
 const changeStatus = async (formData) => {
