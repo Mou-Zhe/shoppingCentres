@@ -14,7 +14,7 @@
           <div style="margin-bottom: 50px; color: #666">提示：商品支持7天无理由退款，如果存在质量问题，请联系售后客服沟通</div>
           <div style="display: flex;align-items: center">
             <el-input-number style="height: 40px;width: 100px" v-model="data.num" :min="1"></el-input-number>
-            <el-button style="height: 40px;width: 100px;margin-left: 10px" type="danger">立即购买</el-button>
+            <el-button @click="handleBuy" style="height: 40px;width: 100px;margin-left: 10px" type="danger">立即购买</el-button>
             <el-button @click="addCart" style="height: 40px;width: 100px;margin-left: 10px" type="danger">加入购物车</el-button>
             <div style="margin-left: 10px;text-align: center; cursor: pointer">
               <div @click="handleCollect">
@@ -32,6 +32,24 @@
       <div>
       </div>
     </div>
+    <el-dialog title="立即购买" v-model="data.formVisible" width="40%" destroy-on-close>
+      <div style="padding: 30px;margin-bottom: 50px">
+        <div style="margin-bottom: 15px"><b>购买：{{data.goods.name}}x{{data.num}}</b></div>
+        <div style="display: flex;align-items: center;">
+          <div style="width: 100px">收货地址：</div>
+          <el-select style="width: 600px" v-model="data.addressId">
+            <el-option v-for="item in data.addressList" :key="item.id" :value="item.id"
+                       :label="item.name+'|'+item.phone+'|'+item.address" ></el-option>
+          </el-select>
+        </div>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="data.formVisible = false">取 消</el-button>
+          <el-button type="primary" @click="buy">确定支付</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -46,8 +64,38 @@ const data=reactive({//获取当前路径附带的id
   user:JSON.parse(localStorage.getItem('xm-user') || '{}'),
   id:router.currentRoute.value.query.id,
   goods:{},
-  num:1
+  num:1,
+  formVisible:false,
+  addressId:null,
+  addressList:[],
 })
+
+const buy=()=>{
+  if(!data.addressId){
+    ElMessage.warning('请选择收货地址')
+    return
+  }
+  request.post("/orders/add?addressId="+data.addressId,[{goodsId:data.id,userId:data.user.id,num:data.num}]).then(res=>{
+    if(res.code==='200'){
+      ElMessage.success('下单成功！')
+      //跳转到订单页面
+      router.push('/front/front_orders')
+    }else {
+      ElMessage.error(res.msg)
+    }
+  })
+}
+
+request.get('/address/selectAll',{
+  params:{userId:data.user.id}
+}).then(res=>{
+  data.addressList=res.data
+})
+
+const handleBuy=()=>{
+  data.formVisible=true
+  data.addressId=null
+}
 
 const  addCart=()=>{
   request.post('/cart/add',{goodsId:data.id,userId:data.user.id,num:data.num}).then(res=>{
