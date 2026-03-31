@@ -80,7 +80,9 @@
     outline: none;
 }
 
-
+.el-menu .is-active{
+    background-color: #a8cdff !important;
+}
 
 
 

@@ -42,6 +42,7 @@ const router = createRouter({
         {path: 'front_goods',component: () => import('@/views/front/Goods.vue'),},
         {path: 'front_orders',component: () => import('@/views/front/Orders.vue'),},
         {path: 'front_userComment',component: () => import('@/views/front/UserComment.vue'),},
+        {path: 'front_notice',component: () => import('@/views/front/Notice.vue'),},
 
       ]/*子路由，不用/*/
     },
