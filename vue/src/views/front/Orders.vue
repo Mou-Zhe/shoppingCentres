@@ -18,7 +18,7 @@
                 <el-table border :data="props.row.orderDetailList" stripe>
                   <el-table-column label="商品图片" prop="goodsImg">
                     <template #default="scope">
-                      <el-image @click="router.push('/front/front_goodsDetail?id='+props.row.goodsId)" style="width: 60px;height: 60px;border-radius: 5px" :src="scope.row.goodsImg"
+                      <el-image @click="router.push('/front/front_goodsDetail?id='+scope.row.goodsId)" style="width: 60px;height: 60px;border-radius: 5px" :src="scope.row.goodsImg"
                                 :preview-src-list="[scope.row.goodsImg]" preview-teleported></el-image>
                     </template>
                   </el-table-column>
@@ -64,14 +64,15 @@
               <el-tag type="danger" v-if="scope.row.status==='已取消'">已取消</el-tag>
               <el-tag type="warning" v-if="scope.row.status==='待支付'">待支付</el-tag>
               <el-tag type="primary" v-if="scope.row.status==='待发货'">待发货</el-tag>
-              <el-tag type="primary" v-if="scope.row.status==='待收货'">待收货</el-tag>
+              <el-tag type="info" v-if="scope.row.status==='待收货'">待收货</el-tag>
               <el-tag type="success" v-if="scope.row.status==='已完成'">已完成</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="操作" width="140" fixed="right">
             <template v-slot="scope">
-              <el-button size="small"  type="primary" plain @click="handlePay(scope.row.id)" >支付</el-button>
-              <el-button size="small" type="danger" plain @click="cancel(scope.row)" >取消</el-button>
+              <el-button size="small"  type="primary" plain @click="handlePay(scope.row.id)" v-if="scope.row.status==='待支付'">支付</el-button>
+              <el-button size="small" type="danger" plain @click="cancel(scope.row)" v-if="scope.row.status==='待支付'" >取消</el-button>
+              <el-button size="small" type="danger" plain @click="changeStatus(scope.row)" v-if="scope.row.status==='待收货'" >确认收货</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -134,6 +135,22 @@ const data=reactive({
   orderId:null,
   payType:'zfb',
 })
+
+// 3. 前台收货更新函数
+const changeStatus = async (formData) => {
+  ElMessageBox.confirm('商品收货后无法撤回，是否确认收货?','订单收货确认',{type:'warning' }).then(res=>{
+    let form=JSON.parse(JSON.stringify(formData));
+    form.status='已完成';
+    request.put('/orders/update',form).then(res=>{
+      if(res.code==='200'){
+        ElMessage.success('收货成功')
+        load()
+      }else{
+        ElMessage.error('收货失败：' + res.msg);
+      }
+    })
+  }).catch()
+}
 
 const handlePay=(orderId)=>{
   data.orderId=orderId
@@ -303,7 +320,7 @@ const update = async (formData) => {
 // 3. 更新函数：增加多层防御，避免 undefined
 const cancel = async (formData) => {
   ElMessageBox.confirm('订单取消后无法恢复，是否确认取消?','订单取消确认',{type:'warning' }).then(res=>{
-    let form=JSON.parse(JSON.stringify(row));
+    let form=JSON.parse(JSON.stringify(formData));
     form.status='已取消';
     request.put('/orders/update',form).then(res=>{
       if(res.code==='200'){

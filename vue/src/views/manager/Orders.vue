@@ -13,19 +13,49 @@
 
 <!--    表头-->
     <div class="card" style="margin-bottom: 5px">
-      <el-table stripe :data="data.tableData" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55" />
-        <el-table-column prop="name" label="名称" />
-        <el-table-column prop="orderNo" label="订单编号" />
+      <el-table stripe :data="data.tableData" >
+        <el-table-column type="expand">
+          <template #default="props">
+
+            <div style="padding: 10px">
+              <h3>订单详情</h3>
+              <el-table border :data="props.row.orderDetailList" stripe>
+                <el-table-column label="商品图片" prop="goodsImg">
+                  <template #default="scope">
+                    <el-image @click="router.push('/front/front_goodsDetail?id='+scope.row.goodsId)" style="width: 60px;height: 60px;border-radius: 5px" :src="scope.row.goodsImg"
+                              :preview-src-list="[scope.row.goodsImg]" preview-teleported></el-image>
+                  </template>
+                </el-table-column>
+                <el-table-column label="商品名称" prop="goodsName"></el-table-column>
+                <el-table-column label="商品单价" prop="goodsPrice">
+                  <template #default="scope">
+                    <b style="font-size: 20px;color: red">￥{{scope.row.price}}</b>
+                  </template>
+                </el-table-column>
+                <el-table-column label="商品数量" prop="num">
+                  <template #default="scope">
+                    x{{scope.row.num}}
+                  </template>
+                </el-table-column>
+
+              </el-table>
+            </div>
+
+
+          </template>
+        </el-table-column>
+        <el-table-column prop="name" label="订单名称" show-overflow-tooltip />
+        <el-table-column prop="orderNo" label="订单编号"show-overflow-tooltip />
         <el-table-column prop="total" label="总价格" >
           <template #default="scope">
             <b style="color:red">￥{{scope.row.total}}</b>
           </template>
         </el-table-column>
-        <el-table-column prop="time" label="下单时间" />
-        <el-table-column prop="userName" label="下单者" />
-        <el-table-column  label="收货信息" >
+        <el-table-column prop="time" label="下单时间" width="180px" show-overflow-tooltip />
+                  <el-table-column prop="userName" label="下单者" />
+        <el-table-column  label="收货信息" show-overflow-tooltip>
           <template #default="scope">
+            <!--              收货者姓名没获取到-->
             {{scope.row.addressName}}|{{scope.row.addressPhone}}|{{scope.row.address}}
           </template>
         </el-table-column>
@@ -34,13 +64,13 @@
             <el-tag type="danger" v-if="scope.row.status==='已取消'">已取消</el-tag>
             <el-tag type="warning" v-if="scope.row.status==='待支付'">待支付</el-tag>
             <el-tag type="primary" v-if="scope.row.status==='待发货'">待发货</el-tag>
-            <el-tag type="primary" v-if="scope.row.status==='待收货'">待收货</el-tag>
+            <el-tag type="info" v-if="scope.row.status==='待收货'">待收货</el-tag>
             <el-tag type="success" v-if="scope.row.status==='已完成'">已完成</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="100" fixed="right">
+        <el-table-column label="操作" width="140" fixed="right">
           <template v-slot="scope">
-            <el-button type="danger" circle :icon="Delete" @click="del(scope.row.id)"></el-button>
+            <el-button size="small"  type="primary" plain @click="changeStatus(scope.row)" v-if="scope.row.status==='待发货'">发货</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -57,6 +87,7 @@ import {reactive} from "vue";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {Delete,Edit} from "@element-plus/icons-vue";
 import request from "@/utils/request.js";
+import router from "@/router/index.js";
 
 const baseUrl=import.meta.env.VITE_BASE_URL
 
@@ -99,6 +130,21 @@ const load=()=>{
   });
 }
 
+// 3. 后台发货更新函数
+const changeStatus = async (formData) => {
+  ElMessageBox.confirm('商品发货后无法撤回，是否确认发货?','订单发货确认',{type:'warning' }).then(res=>{
+    let form=JSON.parse(JSON.stringify(formData));
+    form.status='待收货';
+    request.put('/orders/update',form).then(res=>{
+      if(res.code==='200'){
+        ElMessage.success('后台发货成功')
+        load()
+      }else{
+        ElMessage.error('发货失败：' + res.msg);
+      }
+    })
+  }).catch()
+}
 
 const delBatch = () => {
   // 1. 校验选择的数据
