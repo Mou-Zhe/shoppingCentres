@@ -7,13 +7,13 @@
       <el-button type="warning" plain style="margin: 0 10px" @click="reset">重置</el-button>
     </div>
 
-    <div class="card" style="margin-bottom: 5px">
+    <div class="card" style="margin-bottom: 5px" v-if="data.user.role==='ADMIN'">
       <el-button type="danger" plain @click="delBatch">批量删除</el-button>
     </div>
 
 <!--    表头-->
-    <div class="card" style="margin-bottom: 5px">
-      <el-table stripe :data="data.tableData" >
+    <div class="card" style="margin-bottom: 5px" >
+      <el-table stripe :data="data.tableData" @selection-change="handleSelectionChange" >
         <el-table-column type="expand">
           <template #default="props">
 
@@ -71,6 +71,7 @@
         <el-table-column label="操作" width="140" fixed="right">
           <template v-slot="scope">
             <el-button size="small"  type="primary" plain @click="changeStatus(scope.row)" v-if="scope.row.status==='待发货'">发货</el-button>
+            <el-button size="small"  type="danger" plain @click="del(scope.row.id)" v-if="scope.row.role==='ADMIN'">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -96,6 +97,7 @@ const handleFileUpload=(res) =>{
 }
 
 const data=reactive({
+  user:JSON.parse(localStorage.getItem('xm-user')||'{}'),
   formVisible:false, //弹出对话框el-daiglog，初始为不弹出
   form:{},//数据存储在from中，form联通了Account类的属性,先清空表单
   tableData:[],
