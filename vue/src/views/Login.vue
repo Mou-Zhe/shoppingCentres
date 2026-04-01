@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <div style="padding: 20px;font-size: 30px;color: #656ABA;font-weight: bold;position: absolute;top: 0;left: 0">刘谋麟的第三套个人管理系统</div>
+    <div style="padding: 20px;font-size: 30px;color: #656ABA;font-weight: bold;position: absolute;top: 0;left: 0">刘谋麟个人的第三套管理系统</div>
     <div class="login-box">
       <div style="font-weight: bold;font-size: 24px;text-align: center;margin-bottom: 30px;color: #1450aa">欢迎登录</div>
       <el-form ref="formRef" :model="data.form" :rules="data.rules">

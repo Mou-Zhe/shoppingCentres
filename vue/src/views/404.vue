@@ -35,3 +35,6 @@
 <!--git push origin main-->
 
 <!--npm i echarts -s安装图表构造插件-->
+
+
+<!--public文件夹内的favicon.ico图片是链接网页的图片-->
