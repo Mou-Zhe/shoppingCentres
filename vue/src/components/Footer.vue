@@ -4,7 +4,7 @@
       <div style="display: flex;">
         <div style="width: 100px;"><img style="width: 50px" src="@/assets/imgs/logo.png" alt=""></div>
         <div style="flex: 1">
-          <div>购物商城  |天猫商城 | 隐私政策 | 儿童信息保护规则 | 购物商城隐私政策 | 购物商城用户协议 | 问题反馈 | Select Location</div>
+          <div>购物商城  |拼多多商城 | 隐私政策 | 儿童信息保护规则 | 购物商城隐私政策 | 购物商城用户协议 | 问题反馈 | Select Location</div>
 
           <div>北京互联网法院法律服务工作站 | 中国消费者协会 | 北京市消费者协会</div>
 

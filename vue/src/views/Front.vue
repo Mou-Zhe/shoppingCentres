@@ -60,6 +60,7 @@
 <script setup>
 import router from "@/router/index.js";
 import {reactive} from "vue";
+import Footer from "@/components/Footer.vue";
 
 
 const data=reactive({
