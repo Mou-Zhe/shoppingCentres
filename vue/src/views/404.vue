@@ -33,3 +33,5 @@
 <!--git add .-->
 <!--git commit -m "谋者更新"-->
 <!--git push origin main-->
+
+<!--npm i echarts -s安装图表构造插件-->

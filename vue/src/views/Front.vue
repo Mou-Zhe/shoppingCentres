@@ -14,7 +14,6 @@
           <el-menu-item index="/front/front_goods">精选商品</el-menu-item>
           <el-menu-item index="/front/front_cart">购物车</el-menu-item>
           <el-menu-item index="/front/front_orders">我的订单</el-menu-item>
-          <el-menu-item index="/front/front_userCollect">我的收藏</el-menu-item>
           <el-menu-item index="/front/front_notice">系统公告</el-menu-item>
         </el-menu>
         <div style="width: 350px;margin-right: 50px" v-if="router.currentRoute.value.path!=='/front/front_goods'">

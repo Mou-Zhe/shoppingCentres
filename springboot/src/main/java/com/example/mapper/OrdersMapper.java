@@ -21,5 +21,7 @@ public interface OrdersMapper {
 
     List<Orders> selectAll(Orders order);
 
-
+//    已经收货的才统计售卖情况，以免退货导致数据有误
+    @Select("select * from `orders` where time like concat(#{dateStr},'%') and status='已完成'")
+    List<Orders> selectByDate(String dateStr);
 }

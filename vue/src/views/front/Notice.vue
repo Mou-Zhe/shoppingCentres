@@ -1,19 +1,22 @@
 <template>
-  <div style="width: 60%;margin: 0 auto;padding: 20px 0">
-    <div style="margin-bottom: 50px;font-size: 20px;font-weight: bold">系统公告</div>
-      <div  class="card" style="flex: 1;max-width: 50%;height: 350px">
-        <div style="font-weight: bold;font-size: 17px; padding:10px 0 20px 10px" >系统公告</div>
+  <div style="width: 50%;margin: 0 auto;padding: 20px 0;min-height: 70vh">
+    <div class="card" style="padding: 20px">
+      <div style="margin-bottom: 50px;font-size: 20px;font-weight: bold">系统公告</div>
+      <div>
         <el-timeline style="max-width: 600px">
           <el-timeline-item
+              color="#0bbd87"
               v-for="(item, index) in data.noticeDate"
               :key="index"
               :timestamp="item.time"
-          >
-            {{ item.content }}
+              placement="top">
+<!--     placement="top"     将时间戳放文字上面-->
+            <div style="font-weight: bold;font-size:16px;margin-bottom: 10px">{{item.title}}</div>
+           <div> {{ item.content }}</div>
           </el-timeline-item>
         </el-timeline>
       </div>
-    <div  class="card" style="flex: 1;max-width: 50%">111111</div>
+    </div>
   </div>
 
 </template>

@@ -204,4 +204,8 @@ public void pay(Integer orderId) {
     orders.setStatus("待发货");
     ordersMapper.updateById(orders);
 }
+
+    public  List<Orders> selectByDate(String dateStr){
+        return ordersMapper.selectByDate(dateStr);
+    }
 }

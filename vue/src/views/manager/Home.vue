@@ -1,44 +1,84 @@
 <template>
-  <div class="card" style="margin-bottom: 5px">您好！{{data.user?.name}},欢迎使用本后台系统  </div>
-  <div style="display: flex;width: 100%">
-      <div  class="card" style="flex: 1;max-width: 50%;height: 350px">
-        <div style="font-weight: bold;font-size: 17px; padding:10px 0 20px 10px" >系统公告</div>
-        <el-timeline style="max-width: 600px">
-          <el-timeline-item
-              v-for="(item, index) in data.noticeDate"
-              :key="index"
-              :timestamp="item.time"
-          >
-            {{ item.content }}
-          </el-timeline-item>
-        </el-timeline>
-      </div>
-    <div  class="card" style="flex: 1;max-width: 50%">111111</div>
+  <div>
+    <div class="card" style="margin-bottom: 5px">您好！{{data.user?.name}},欢迎使用本后台系统  </div>
+    <div class="card">
+      <div style="height: 400px" id="line"></div>
+    </div>
   </div>
 
 </template>
 
 <script setup>
-import {reactive} from"vue"
+import {onMounted, reactive} from "vue"
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
+import * as echarts from 'echarts'
+const lineOption = {
+  title: {
+    text: '近30商品销售的趋势图',
+    subtext: '趋势图',
+    left: 'center'
+  },
+  tooltip: {
+    trigger: 'axis'
+  },
+  legend: {
+    left: 'left'
+  },
+  xAxis: {
+    name: '日期',
+    type: 'category',
+    data: []
+  },
+  yAxis: {
+    name: '销量',
+    type: 'value'
+  },
+  grid: {
+    top: '20%',
+    bottom:'10%'
+  },
+  series: [
+    {
+      data: [],
+      type: 'line',
+      smooth: true,
+      areaStyle: {
+        opacity: 0.8, // 阴影的透明度
+        color: 'rgb(185,190,255)' // 阴影的颜色和透明度
+      },
+      markPoint: {
+        data: [
+          { type: 'max', name: 'Max' },
+          { type: 'min', name: 'Min' }
+        ]
+      },
+      markLine: {
+        data: [{ type: 'average', name: 'Avg' }]
+      }
+    },
+  ]
+}
+
+// 等页面所有元素加载完成后再设置 echarts图表
+onMounted(() => {
+  // 请求数据  初始化图表
+  // 折线图
+  let lineDom = document.getElementById('line')
+  let lineChart = echarts.init(lineDom)
+
+  // 参考
+  request.get('/selectLine').then(res => {
+    lineOption.xAxis.data = res.data.date || []
+    lineOption.series[0].data = res.data.count || []
+    lineChart.setOption(lineOption)
+  })
+})
 
 const data=reactive({
   user:JSON.parse(localStorage.getItem('xm-user')||'{}'),
-  noticeDate:[]
 })
 
-const loadNotice=()=>{
-  request.get('/notice/selectAll').then(res=>{
-    if(res.code==='200'){
-      data.noticeDate=res.data
-    }else{
-      ElMessage.error(res.msg)
-    }
-  })
-}
-
-loadNotice()
 </script>
 
 <style>
