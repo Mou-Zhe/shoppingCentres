@@ -5,14 +5,10 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.example.common.Result;
 import com.example.common.enums.RoleEnum;
-import com.example.entity.Account;
-import com.example.entity.Orders;
-import com.example.entity.User;
+import com.example.entity.*;
 import com.example.exception.CustomException;
 import com.example.mapper.OrderDetailMapper;
-import com.example.service.AdminService;
-import com.example.service.OrdersService;
-import com.example.service.UserService;
+import com.example.service.*;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
@@ -20,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class WebController {
@@ -35,11 +32,15 @@ public class WebController {
 
     @Resource
     OrderDetailMapper orderDetailMapper;
-    @Autowired
+    @Resource
     private CompositeMeterRegistryAutoConfiguration compositeMeterRegistryAutoConfiguration;
-    @Autowired
+    @Resource
     private OrdersService ordersService;
+    @Resource
+    private GoodsService goodsService;
 
+    @Resource
+    private CategoryService categoryService;
     /*
     **
     默认请求接口用于测试
@@ -70,6 +71,52 @@ public class WebController {
         );
 
         return Result.success(map);
+    }
+
+
+    @GetMapping("/selectPie")
+    public Result selectPie() {
+        List<Map<String, Object>> list = new ArrayList<>();
+        List<Orders> ordersList = ordersService.selectAll(null);
+        ordersList = ordersList.stream().filter(orders -> orders.getStatus().equals("已完成")).toList();
+
+        Set<String> goodsNameSet = new HashSet<>();//set集合查重
+        List<OrderDetail> orderDetailList = new ArrayList<>();  // 已完成的订单的对应的商品信息
+        for (Orders orders : ordersList) {
+            orderDetailList.addAll(orderDetailMapper.selectByOrderId(orders.getId()));//获取所有不重复订单
+            goodsNameSet.addAll(orderDetailList.stream().map(OrderDetail::getGoodsName).collect(Collectors.toSet()));
+        }
+        for (String name : goodsNameSet) {
+            List<OrderDetail> detailList = orderDetailList.stream().filter(orderDetail -> orderDetail.getGoodsName().equals(name)).toList();
+            BigDecimal total = BigDecimal.ZERO;
+            for (OrderDetail orderDetail : detailList) {
+                total = total.add(orderDetail.getPrice().multiply(BigDecimal.valueOf(orderDetail.getNum())));
+            }
+            Map<String, Object> map = Map.of(
+                    "name", name,
+                    "value", total
+            );
+            list.add(map);
+        }
+        return Result.success(list);
+    }
+
+
+    // 分类后的商品数量比例图
+    @GetMapping("/selectPie1")
+    public Result selectPie1() {
+        List<Map<String, Object>> list = new ArrayList<>();
+        List<Goods> goodsList = goodsService.selectAll(null);
+        List<Category> categoryList= categoryService.selectAll(null);
+        for (Category category : categoryList) {
+            long count = goodsList.stream().filter(goods -> goods.getCategoryId().equals(category.getId())).count();
+            Map<String, Object> map = Map.of(
+                    "name",category.getName(),
+                    "value",count
+            );
+            list.add(map);
+        }
+        return Result.success(list);
     }
 
     /*

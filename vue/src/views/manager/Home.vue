@@ -4,6 +4,16 @@
     <div class="card">
       <div style="height: 400px" id="line"></div>
     </div>
+
+    <div style="display: flex;grid-gap: 10px">
+      <div style="flex: 1" class="card">
+        <div style="height: 400px" id="pie"></div>
+      </div>
+      <div style="flex: 1" class="card">
+        <div style="height: 400px" id="pie1"></div>
+      </div>
+
+    </div>
   </div>
 
 </template>
@@ -60,6 +70,79 @@ const lineOption = {
   ]
 }
 
+const pieOption = {
+  title: {
+    text: '商品销售额比例图',
+    subtext: '比例图',
+    left: 'center'
+  },
+  tooltip: {
+    trigger: 'item'
+  },
+  legend: {
+    top: 0,
+    orient: 'vertical',
+    left: 'left'
+  },
+  series: [
+    {
+      type: 'pie',
+      center: ['50%', '60%'],
+      radius: '50%',
+      data: [],
+      label: {
+        show: true,
+        formatter(param) {
+          return param.name + ' (' + param.percent + '%)';
+        }
+      },
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)'
+        }
+      }
+    }
+  ]
+}
+
+const pieOption1 = {
+  title: {
+    text: '商品销售额比例图',
+    subtext: '比例图',
+    left: 'center'
+  },
+  tooltip: {
+    trigger: 'item'
+  },
+  legend: {
+    top: 0,
+    orient: 'vertical',
+    left: 'left'
+  },
+  series: [
+    {
+      type: 'pie',
+      center: ['50%', '60%'],
+      radius: '50%',
+      data: [],
+      label: {
+        show: true,
+        formatter(param) {
+          return param.name + ' (' + param.percent + '%)';
+        }
+      },
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)'
+        }
+      }
+    }
+  ]
+}
 // 等页面所有元素加载完成后再设置 echarts图表
 onMounted(() => {
   // 请求数据  初始化图表
@@ -72,6 +155,24 @@ onMounted(() => {
     lineOption.xAxis.data = res.data.date || []
     lineOption.series[0].data = res.data.count || []
     lineChart.setOption(lineOption)
+  })
+
+  // 左饼图
+  let pieDom = document.getElementById('pie')
+  let pieChart = echarts.init(pieDom)
+
+  request.get('/selectPie').then(res => {
+    pieOption.series[0].data = res.data || []
+    pieChart.setOption(pieOption)
+  })
+
+  // 右饼图
+  let pieDom1 = document.getElementById('pie1')
+  let pieChart1 = echarts.init(pieDom1)
+
+  request.get('/selectPie1').then(res => {
+    pieOption1.series[0].data = res.data || []
+    pieChart1.setOption(pieOption1)
   })
 })
 
