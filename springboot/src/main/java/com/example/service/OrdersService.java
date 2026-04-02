@@ -57,6 +57,7 @@ public class OrdersService {
         String name="";
         Integer totalNum=0;
         List<OrderDetail> orderDetailList=new ArrayList<>();
+
         for (Cart cart : cartList) {
             Integer num = cart.getNum();
             totalNum+=num;
@@ -85,12 +86,16 @@ public class OrdersService {
             orderDetail.setGoodsId(goodsId);
             orderDetail.setGoodsName(goods.getName());
             orderDetail.setGoodsImg(goods.getImg());
-            orderDetailMapper.insert(orderDetail);
+//            orderDetailMapper.insert(orderDetail);
+
             orderDetailList.add(orderDetail);
 
             //删除购物车数据
             cartService.deleteById(cart.getId());
+
+//            System.out.println("================================================================="+orderDetail.getId());
         }
+
         name=name.substring(0,name.length()-1);//删除最末尾多余的、
         name+="等"+totalNum+"件商品";
         orders.setName(name);
@@ -99,6 +104,7 @@ public class OrdersService {
 
         //更新订单详情里面的订单ID
         Integer orderId=orders.getId();
+
         for (OrderDetail orderDetail : orderDetailList) {
             orderDetail.setOrderId(orderId);
             orderDetailMapper.insert(orderDetail);

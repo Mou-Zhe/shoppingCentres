@@ -56,8 +56,8 @@
           <el-table-column  label="收货信息" show-overflow-tooltip>
             <template #default="scope">
 <!--              收货者姓名没获取到-->
-              {{scope.row}}
-<!--              {{scope.row.addressName}}{{scope.row.addressPhone}}|{{scope.row.address}}-->
+<!--              {{scope.row}}-->
+              {{scope.row.addressName}}{{scope.row.addressPhone}}|{{scope.row.address}}
             </template>
           </el-table-column>
           <el-table-column label="订单状态">
