@@ -56,7 +56,8 @@
           <el-table-column  label="收货信息" show-overflow-tooltip>
             <template #default="scope">
 <!--              收货者姓名没获取到-->
-              {{scope.row.addressName}}||{{scope.row.addressPhone}}|{{scope.row.address}}
+              {{scope.row}}
+<!--              {{scope.row.addressName}}{{scope.row.addressPhone}}|{{scope.row.address}}-->
             </template>
           </el-table-column>
           <el-table-column label="订单状态">
@@ -148,8 +149,17 @@ const data=reactive({
   orderNo:null,
   ids:[],
   orderId:null,
+  // addressList:null,
   payType:'zfb',
 })
+
+// request.get('/address/selectAll',{
+//   params:{
+//     userId:data.user.id,
+//   }
+// }).then(res=>{
+//   data.addressList=res.data
+// })
 
 const handleComment=(row)=>{
   data.formVisible1=true//打开弹窗

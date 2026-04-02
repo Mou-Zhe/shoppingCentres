@@ -95,6 +95,7 @@ public class OrderController {
         System.out.println("接收的分页参数：pageNum=" + pageNum + ", pageSize=" + pageSize);
 
         PageInfo<Orders> pageInfo = orderService.selectPage(order, pageNum, pageSize);
+
         System.out.println("查询结果数量：" + pageInfo.getList().size());
         // 修复：返回PageInfo对象，前端可直接获取list和total
         return Result.success(pageInfo);

@@ -5,7 +5,9 @@
     <div style="margin-bottom: 20px">
       收货地址：
       <el-select style="width: 500px" v-model="data.addressId">
-        <el-option v-for="item in data.addressList" :key="item.id" :value="item.id"
+        <el-option v-for="item in data.addressList"
+                   :key="item.id"
+                   :value="item.id"
                    :label="item.name+'|'+item.phone+'|'+item.address" ></el-option>
       </el-select>
     </div>
